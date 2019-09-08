@@ -1,0 +1,41 @@
+# Java related
+target/**
+*.war
+*.ear
+*.class
+
+**/crypto/certificate.pem
+**/crypto/configuration.cnf
+**/crypto/java-keystore.jks
+**/crypto/keystore.pkcs12
+**/crypto/private-key.pem
+
+# MAC
+.DS_Store
+
+# gradle
+.gradle
+build/**
+**/build/**
+
+# eclipse specific
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch

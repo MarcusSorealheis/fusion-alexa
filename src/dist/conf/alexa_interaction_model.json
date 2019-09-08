@@ -1,0 +1,132 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "fusion",
+            "intents": [
+                {
+                    "name": "FUSION_FindMoviesInGenreIntent",
+                    "slots": [
+                        {
+                            "name": "movie_genre",
+                            "type": "MOVIE_GENRE"
+                        }
+                    ],
+                    "samples": [
+                        "find movies in the genre {movie_genre}"
+                    ]
+                },
+                {
+                    "name": "FUSION_FindMoviesInGenreInYearIntent",
+                    "slots": [
+                        {
+                            "name": "movie_year",
+                            "type": "AMAZON.DATE"
+                        },
+                        {
+                            "name": "movie_genre",
+                            "type": "MOVIE_GENRE"
+                        }
+                    ],
+                    "samples": [
+                        "find movies in the genre {movie_genre} and in the year {movie_year}"
+                    ]
+                },
+                {
+                    "name": "FUSION_WhatIsFusionIntent",
+                    "slots": [],
+                    "samples": [
+                        "what is Fusion",
+                        "what's Fusion",
+                        "please tell me about Fusion",
+                        "tell me about Fusion"
+                    ]
+                },
+                {
+                    "name": "FUSION_FooIntent",
+                    "slots": [],
+                    "samples": [
+                        "testing the foo dynamic action",
+                        "testing foo"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                }
+            ],
+            "types": [
+               
+                {
+                    "name": "MOVIE_GENRE",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "Children"
+                            }
+                        },
+                         {
+                            "name": {
+                                "value": "Drama"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Crime"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "War"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Musical"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Action"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Comedy"
+                            }
+                        },
+                         {
+                            "name": {
+                                "value": "Romance"
+                            }
+                        },
+                         {
+                            "name": {
+                                "value": "Adventure"
+                            }
+                        },
+                         {
+                            "name": {
+                                "value": "Fantasy"
+                            }
+                        },
+                         {
+                            "name": {
+                                "value": "Mystery"
+                           }
+                        },
+                        {
+                            "name": {
+                                "value": "Thriller"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Sci-Fi"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
