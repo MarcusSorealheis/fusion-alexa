@@ -33,7 +33,7 @@ The ultimate purpose of this example is to inspire Lucidworks Developers to buil
 
 For development and testing we simply spun up an Ubuntu server using Amazon Lightsail. 
 
-This gives you an internet accessible server with a static IP(to DNS map you domain name too) and port 443 opened.
+This gives you an internet accessible server with a static IP(to DNS map your domain name too) and port 443 opened.
 
 ## Fusion setup
 
@@ -45,7 +45,7 @@ I developed and tested this Application against Fusion Server v4.2.3
 
 `./gradlew distZip`
 
-This creates a zip file in the `build/distributions/` directory
+This creates a zip file in the `build/distributions` directory
 
 ## Running The Built Zip
 
