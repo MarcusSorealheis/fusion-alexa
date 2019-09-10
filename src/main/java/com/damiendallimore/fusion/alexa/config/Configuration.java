@@ -14,9 +14,21 @@ public class Configuration {
 	private FusionServerAPISettings fusionServerAPISettings;
 	private Map<String, DynamicAction> dynamicActions;
 	private Map<String, IntentMapping> intentMappings;
+	private Map<String,Map<String, String>> resourceStrings;
 
 	public Configuration() {
 	}
+		
+
+	public Map<String, Map<String, String>> getResourceStrings() {
+		return resourceStrings;
+	}
+
+
+	public void setResourceStrings(Map<String, Map<String, String>> resourceStrings) {
+		this.resourceStrings = resourceStrings;
+	}
+
 
 	public AlexaWebServiceSettings getAlexaWebServiceSettings() {
 		return alexaWebServiceSettings;

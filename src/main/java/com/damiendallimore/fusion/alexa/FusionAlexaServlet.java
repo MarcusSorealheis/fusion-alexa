@@ -27,12 +27,12 @@ public class FusionAlexaServlet extends SkillServlet {
 	private static Skill getSkill(Configuration configuration) {
 		return Skills.standard()
 				.addRequestHandlers(
-						new CancelandStopIntentHandler(), 
+						new CancelandStopIntentHandler(configuration), 
 						new FusionIntentHandler(configuration),
-						new HelpIntentHandler(), 
-						new LaunchRequestHandler(),
-						new SessionEndedRequestHandler())
-				.addExceptionHandler(new FusionExceptionHandler())
+						new HelpIntentHandler(configuration), 
+						new LaunchRequestHandler(configuration),
+						new SessionEndedRequestHandler(configuration))
+				.addExceptionHandler(new FusionExceptionHandler(configuration))
 				.withSkillId(configuration.getAlexaWebServiceSettings().getSkillID()).build();
 	}
 

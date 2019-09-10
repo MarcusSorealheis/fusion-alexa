@@ -146,6 +146,13 @@ If you need, they can be overidden in each `intent_mapping` that you declare.
 *  **name** : A name to refer to this action when wiring up in `intent_mappings`
 *  **class** : Fully qualified classname  
 
+#### resource\_strings
+
+An array of supported Alexa i8n locales containing a collection of resource strings 
+
+*  **key** : resource string key
+*  **value** : the i18n resource string value 
+
 #### intent\_mappings
 
 The fields below that you include will determine how the intent request is handled.
@@ -177,16 +184,17 @@ The fields below that you include will determine how the intent request is handl
 
 You can easily extend the available set of built in actions by creating your own custom dynamic actions and plugging them in , all you need is some simple Java coding skills.
 
-This App ships with 2 example dynamic actions , FooAction and GooAction. They are just trivial examples.
+This App ships with 2 example dynamic actions , `com.damiendallimore.fusion.alexa.dynamicaction.FooAction` and `com.damiendallimore.fusion.alexa.dynamicaction.GooAction`. They are just trivial skeleton examples.
 
 These are the steps for creating a new Dynamic Action :
 
 1. Create a class that extends the AbstractDynamicAction base class.
 2. Implement the `executeAction()` method .You can access slot values and custom arguments 
 from within your code also.
-3. Compile the class , add it to a jar file and place in the `lib` directory.Also place any other dependent jars for your action in this directory.
+3. Update build.gradle with any dependencies.
 4. Update the `configuration.json` file to map the class name to some action name that you can refer to
 5. Add a mapping from an incoming intent request to this dynamic action in `configuration.json`
+6. Rebuild everything , `./gradlew distZip`
 
 Refer to the examples in `configuration.json`.
  

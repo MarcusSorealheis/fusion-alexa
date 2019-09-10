@@ -13,6 +13,7 @@ import com.damiendallimore.fusion.alexa.config.Configuration;
 import com.damiendallimore.fusion.alexa.config.DynamicAction;
 import com.damiendallimore.fusion.alexa.config.FusionServerAPISettings;
 import com.damiendallimore.fusion.alexa.config.IntentMapping;
+import com.damiendallimore.fusion.alexa.config.ResourceStringsUtil;
 import com.damiendallimore.fusion.alexa.dynamicaction.AbstractDynamicAction;
 
 
@@ -85,7 +86,10 @@ public class FusionIntentHandler implements IntentRequestHandler {
 		
 		if (im == null) {
 			logger.error("No mapping exists for " + intentName);
-			String noIntent = "I'm sorry , I didn't understand that request";
+			
+			String noIntent = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.NOINTENT);
+			
+			
 			return input.getResponseBuilder()
 				    .withSimpleCard("Fusion", noIntent)
 				    .withSpeech(noIntent)
@@ -264,7 +268,9 @@ public class FusionIntentHandler implements IntentRequestHandler {
             		}
             		// oops , no search results
             		if (docs.isEmpty()) {
-            			response = "I'm sorry , I couldn't find any results";
+            			
+            			response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.NORESULTS);
+            			
             			totalResponse.append(response);
             		} else {
 
@@ -311,9 +317,11 @@ public class FusionIntentHandler implements IntentRequestHandler {
 			if (response.startsWith("<speak>")) {
 				response = response.replaceAll("\\\\", "");	
 			}
-					
+				
+			String cardName = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.CARDNAME);
+			
 			return input.getResponseBuilder()
-		    .withSimpleCard("Fusion", response)
+		    .withSimpleCard(cardName, response)
 		    .withSpeech(response)
 		    .build();
 						

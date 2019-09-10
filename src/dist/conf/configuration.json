@@ -7,7 +7,7 @@
 	  "https_listen_endpoint":"yourhost.com/alexa",
 	  "keystore_path":"java-keystore.jks",
 	  "keystore_password":"somepass",
-	  "skill_id":"amzn1.ask.skill.d652e506-2e7f-4d97-838f-22aa060b9a11"
+	  "skill_id":"amzn1.ask.skill.xxxxxxxxxxxxxxxxxx"
   
   },
   "fusion_server_api_settings":
@@ -41,6 +41,53 @@
       
     }
   ],
+  "resource_strings":{
+  
+    "en-US":[
+    {
+      "key": "cardname",
+      "value": "Fusion"
+      
+    },
+    {
+      "key": "goodbye",
+      "value": "Goodbye, thankyou for talking to Fusion"
+      
+    },
+    {
+      "key": "fallback",
+      "value": "Sorry, I don't know that. You can say try saying help"
+      
+    },
+    {
+      "key": "error",
+      "value": "An error was encountered while handling your request. Try again later"
+      
+    },
+    {
+      "key": "help",
+      "value": "You can ask Fusion something"
+      
+    },
+    {
+      "key": "launch",
+      "value": "Welcome to the LucidWorks Fusion Skill"
+      
+    },
+    {
+      "key": "nointent",
+      "value": "I'm sorry , I didn't understand that request"
+      
+    },
+    {
+      "key": "noresults",
+      "value": "I'm sorry , I couldn't find any results"
+      
+    }
+        
+    ]
+    
+  },
   "intent_mappings": [ 
   	{
       "intent": "FUSION_FindMoviesInGenreIntent",

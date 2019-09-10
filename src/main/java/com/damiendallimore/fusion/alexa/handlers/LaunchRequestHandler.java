@@ -4,6 +4,8 @@ import com.amazon.ask.dispatcher.request.handler.HandlerInput;
 import com.amazon.ask.dispatcher.request.handler.RequestHandler;
 import com.amazon.ask.model.LaunchRequest;
 import com.amazon.ask.model.Response;
+import com.damiendallimore.fusion.alexa.config.Configuration;
+import com.damiendallimore.fusion.alexa.config.ResourceStringsUtil;
 
 import java.util.Optional;
 
@@ -14,7 +16,13 @@ import static com.amazon.ask.request.Predicates.requestType;
 
 public class LaunchRequestHandler implements RequestHandler {
 
+	private Configuration configuration;
+	
 	protected static Logger logger = LoggerFactory.getLogger(LaunchRequestHandler.class);
+	
+	public LaunchRequestHandler(Configuration configuration) {
+		this.configuration = configuration;
+	}
 	
 	@Override
 	public boolean canHandle(HandlerInput input) {
@@ -26,8 +34,11 @@ public class LaunchRequestHandler implements RequestHandler {
 		
 		logger.info("LaunchRequestHandler invoked");
 				
-		String speechText = "Welcome to the LucidWorks Fusion Skill";
-		return input.getResponseBuilder().withSpeech(speechText).withSimpleCard("Fusion", speechText)
+		String speechText = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.LAUNCH);
+		String cardName = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.CARDNAME);
+		
+		
+		return input.getResponseBuilder().withSpeech(speechText).withSimpleCard(cardName, speechText)
 				.withReprompt(speechText).build();
 	}
 

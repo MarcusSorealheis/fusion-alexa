@@ -182,10 +182,41 @@ public class FusionAlexaServer {
 	 */
 	private void loadConfigurationJSON() throws Exception {
 
+		this.configuration = new Configuration();
+		
 		JSONObject configJSON = loadJSON(CONFIGURATION_DIR, CONFIGURATION_JSON);
 		
 		logger.debug("Configuration JSON : "+configJSON.toString());
+		
+		JSONObject resourceStrings = configJSON.getJSONObject("resource_strings");
+		
+		String [] locales = JSONObject.getNames(resourceStrings);
+		
+		Map<String,Map<String, String>> resourceStringsMap = new HashMap<String,Map<String, String>>();
+		
+		for(String locale:locales) {
+			
+			Map<String, String> localeMap = new HashMap<String, String>();
+			
+			JSONArray resourcePropertys = resourceStrings.getJSONArray(locale);
 
+			for (int i = 0; i < resourcePropertys.length(); i++) {
+				JSONObject item = resourcePropertys.getJSONObject(i);
+
+				
+				try {
+					localeMap.put(item.getString("key"),item.getString("value"));
+				} catch (Exception e) {
+				}
+	
+			}
+			
+			resourceStringsMap.put(locale,localeMap);
+			
+		}
+		
+		this.configuration.setResourceStrings(resourceStringsMap);
+		
 		String globalApp = "";
 		String globalPipelineId = "";
 		String globalCollection = "";
@@ -206,7 +237,7 @@ public class FusionAlexaServer {
 		if (globals.has("global_max_results_per_page"))
 			globalMaxResultsPerPage = globals.getInt("global_max_results_per_page");
 		
-		this.configuration = new Configuration();
+		
 
 		AlexaWebServiceSettings alexaWebServiceSettings = new AlexaWebServiceSettings();
 
