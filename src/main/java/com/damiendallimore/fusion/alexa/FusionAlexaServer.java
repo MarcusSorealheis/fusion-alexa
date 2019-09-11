@@ -183,7 +183,7 @@ public class FusionAlexaServer {
 	 */
 	private void loadConfigurationJSON() throws Exception {
 
-		this.configuration = new Configuration();
+		this.configuration = Configuration.getInstance();
 		
 		JSONObject configJSON = loadJSON(CONFIGURATION_DIR, CONFIGURATION_JSON);
 		

@@ -17,11 +17,19 @@ public class Configuration {
 	private Map<String, IntentMapping> intentMappings;
 	private Map<String,Map<String, String>> resourceStrings;
 
-	public Configuration() {
-	}
+	private static Configuration instance;
 	
+	private Configuration() {}
 	
+	public synchronized static Configuration getInstance() {
 		
+		if (instance == null) {
+			instance = new Configuration();
+		}
+		
+	    return instance;
+	
+	}
 
 	public Map<String, JSONResponseHandler> getJsonResponseHandlers() {
 		return jsonResponseHandlers;

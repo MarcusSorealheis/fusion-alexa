@@ -110,6 +110,8 @@ As you add your own intents/utterances/slots , you'll update this file, copy it 
 
 This is the main configuration file for setting up your Application to integrate Alexa and Fusion.
 
+This file is monitored every 10 seconds for updates and dynamically reloaded if changed.So you can update your configurations on the fly without having to restart the application.
+
 
 #### alexa\_web\_service\_settings
 
