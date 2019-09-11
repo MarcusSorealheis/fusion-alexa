@@ -99,8 +99,13 @@
       
     },
     {
-      "key": "movie year",
+      "key": "movie_year_1",
       "value": "The movie"
+      
+    },
+    {
+      "key": "movie_year_2",
+      "value": "was released in"
       
     },
     {
@@ -147,7 +152,7 @@
       "additional_url_args":"start=0,wt=json",
       "max_results_per_page": 2,
       "json_response_handler": "default",
-      "response": "$resourcestring_movieyear$ $resultfield_title_txt$ was released in $slot_movie_year$"
+      "response": "$resourcestring_movie_year_1$ $resultfield_title_txt$ $resourcestring_movie_year_2$ $slot_movie_year$"
       
     },
     {
