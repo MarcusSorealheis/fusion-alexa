@@ -149,6 +149,11 @@ If you need, they can be overidden in each `intent_mapping` that you declare.
 *  **name** : A name to refer to this action when wiring up in `intent_mappings`
 *  **class** : Fully qualified classname  
 
+#### json\_response\_handlers
+
+*  **name** : A name to refer to this handler when wiring up in `intent_mappings`
+*  **class** : Fully qualified classname  
+
 #### resource\_strings
 
 An array of supported Alexa i8n locales containing a collection of resource strings 
@@ -160,9 +165,11 @@ An array of supported Alexa i8n locales containing a collection of resource stri
 
 The fields below that you include will determine how the intent request is handled.
 
-* if **solr_query** is present , then a REST call will be made to Fusion.Searches can return 1 or many documents , this is automagically handled for you.
-* if **dynamic_action** is present , then a dynamic action will be executed.
-* if neither of the above fields is present , then it is assumed that the **response** field is just some static text to echo back to Alexa.
+if **solr_query** is present , then a REST call will be made to Fusion.Searches can return 1 or many documents , this is automagically handled for you.
+
+if **dynamic_action** is present , then a dynamic action will be executed.
+
+if neither of the above fields is present , then it is assumed that the **response** field is just some static text to echo back to Alexa.
 
 *  **intent** : the name of the incoming request intent to map this action to 
 *  **solr_query** : [query parameters](https://doc.lucidworks.com/fusion-server/4.2/search-development/getting-data-out/query-language-cheat-sheet.html#common-query-parameters) 
@@ -183,7 +190,7 @@ The fields below that you include will determine how the intent request is handl
 *  **json_response_handler_args** :  a key=value,key2=value2 ..... list of arguments that can be passed into the handler and accessed by your code
 *  **additional_url_args** : a key=value,key2=value2 ..... list of any other url arguments that you want to add to the REST search request
 
-`solr_query` and `filter_query` may also include slot values from the request. See the example in `configuration.json`
+`solr_query` , `filter_query` and `additional_url_args` may also include slot values from the request. See the example in `configuration.json`
 
 ### Custom JSON Response Handlers
 
