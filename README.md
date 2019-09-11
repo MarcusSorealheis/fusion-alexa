@@ -165,11 +165,11 @@ An array of supported Alexa i8n locales containing a collection of resource stri
 
 The fields below that you include will determine how the intent request is handled.
 
-if **solr_query** is present , then a REST call will be made to Fusion.Searches can return 1 or many documents , this is automagically handled for you.
+If **solr_query** is present , then a REST call will be made to Fusion.Searches can return 1 or many documents , this is automagically handled for you.
 
-if **dynamic_action** is present , then a dynamic action will be executed.
+If **dynamic_action** is present , then a dynamic action will be executed.
 
-if neither of the above fields is present , then it is assumed that the **response** field is just some static text to echo back to Alexa.
+If neither of the above fields is present , then it is assumed that the **response** field is just some static text to echo back to Alexa.
 
 *  **intent** : the name of the incoming request intent to map this action to 
 *  **solr_query** : [query parameters](https://doc.lucidworks.com/fusion-server/4.2/search-development/getting-data-out/query-language-cheat-sheet.html#common-query-parameters) 
@@ -192,7 +192,7 @@ if neither of the above fields is present , then it is assumed that the **respon
 
 `solr_query` , `filter_query` and `additional_url_args` may also include slot values from the request. See the example in `configuration.json`
 
-### Custom JSON Response Handlers
+### Custom JSON response handlers
 
 You can implement you own custom JSON Response handler.
 
