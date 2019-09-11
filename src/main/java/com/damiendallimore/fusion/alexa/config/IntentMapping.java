@@ -2,6 +2,10 @@ package com.damiendallimore.fusion.alexa.config;
 
 public class IntentMapping {
 
+	private String additionalURLArgs = "";
+	private String jsonResponseHandler = "";
+	private String jsonResponseHandlerArgs = "";
+	private String uriPath = "";
 	private String app = "";
 	private String intent = "";
 	private String solrQuery = "";
@@ -19,6 +23,51 @@ public class IntentMapping {
 
 	public IntentMapping() {
 	}
+
+
+	public String getAdditionalURLArgs() {
+		return additionalURLArgs;
+	}
+
+
+	public void setAdditionalURLArgs(String additionalURLArgs) {
+		this.additionalURLArgs = additionalURLArgs;
+	}
+
+
+	public String getJsonResponseHandler() {
+		return jsonResponseHandler;
+	}
+
+
+
+	public void setJsonResponseHandler(String jsonResponseHandler) {
+		this.jsonResponseHandler = jsonResponseHandler;
+	}
+
+
+	public String getJsonResponseHandlerArgs() {
+		return jsonResponseHandlerArgs;
+	}
+
+
+
+	public void setJsonResponseHandlerArgs(String jsonResponseHandlerArgs) {
+		this.jsonResponseHandlerArgs = jsonResponseHandlerArgs;
+	}
+
+
+
+	public String getUriPath() {
+		return uriPath;
+	}
+
+
+
+	public void setUriPath(String uriPath) {
+		this.uriPath = uriPath;
+	}
+
 
 	public String getApp() {
 		return app;

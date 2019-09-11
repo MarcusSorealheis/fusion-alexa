@@ -29,6 +29,7 @@ import com.damiendallimore.fusion.alexa.config.Configuration;
 import com.damiendallimore.fusion.alexa.config.DynamicAction;
 import com.damiendallimore.fusion.alexa.config.FusionServerAPISettings;
 import com.damiendallimore.fusion.alexa.config.IntentMapping;
+import com.damiendallimore.fusion.alexa.config.JSONResponseHandler;
 
 public class FusionAlexaServer {
 
@@ -217,6 +218,9 @@ public class FusionAlexaServer {
 		
 		this.configuration.setResourceStrings(resourceStringsMap);
 		
+		String globalJSONResponseHandler = "";
+		String globalJSONResponseHandlerArgs = "";
+		String globalUriPath = "";
 		String globalApp = "";
 		String globalPipelineId = "";
 		String globalCollection = "";
@@ -225,7 +229,13 @@ public class FusionAlexaServer {
 		
 
 		JSONObject globals = configJSON.getJSONObject("global_fusion_search_settings");
-
+		
+		if (globals.has("global_json_response_handler_args"))
+			globalJSONResponseHandlerArgs = globals.getString("global_json_response_handler_args");
+		if (globals.has("global_json_response_handler"))
+			globalJSONResponseHandler = globals.getString("global_json_response_handler");
+		if (globals.has("global_uri_path"))
+			globalUriPath = globals.getString("global_uri_path");
 		if (globals.has("global_app"))
 			globalApp = globals.getString("global_app");
 		if (globals.has("global_pipeline_id"))
@@ -296,6 +306,29 @@ public class FusionAlexaServer {
 		}
 
 		this.configuration.setDynamicActions(dynamicActionMappings);
+		
+		Map<String, JSONResponseHandler> responseHandlerMappings = new HashMap<String, JSONResponseHandler>();
+
+		JSONArray responseMappings = configJSON.getJSONArray("json_response_handlers");
+
+		for (int i = 0; i < responseMappings.length(); i++) {
+			JSONObject item = responseMappings.getJSONObject(i);
+
+			JSONResponseHandler rh = new JSONResponseHandler();
+			try {
+				rh.setName(item.getString("name"));
+			} catch (Exception e) {
+			}
+			try {
+				rh.setClassName(item.getString("class"));
+			} catch (Exception e) {
+			}
+
+			responseHandlerMappings.put(rh.getName(), rh);
+		}
+
+		this.configuration.setJsonResponseHandlers(responseHandlerMappings);
+		
 
 		Map<String, IntentMapping> intentMappings = new HashMap<String, IntentMapping>();
 
@@ -308,6 +341,27 @@ public class FusionAlexaServer {
 
 			// globals
 
+			try {
+				if (item.has("json_response_handler"))
+					im.setJsonResponseHandler(item.getString("json_response_handler"));
+				else
+					im.setJsonResponseHandler(globalJSONResponseHandler);
+			} catch (Exception e) {
+			}
+			try {
+				if (item.has("json_response_handler_args"))
+					im.setJsonResponseHandlerArgs(item.getString("json_response_handler_args"));
+				else
+					im.setJsonResponseHandlerArgs(globalJSONResponseHandlerArgs);
+			} catch (Exception e) {
+			}
+			try {
+				if (item.has("uri_path"))
+					im.setUriPath(item.getString("uri_path"));
+				else
+					im.setUriPath(globalUriPath);
+			} catch (Exception e) {
+			}
 			try {
 				if (item.has("app"))
 					im.setApp(item.getString("app"));
@@ -363,6 +417,11 @@ public class FusionAlexaServer {
 			} catch (Exception e) {
 			}
 
+			try {
+				im.setAdditionalURLArgs(item.getString("additional_url_args"));
+			} catch (Exception e) {
+			}
+			
 			try {
 				im.setSolrQuery(item.getString("solr_query"));
 			} catch (Exception e) {

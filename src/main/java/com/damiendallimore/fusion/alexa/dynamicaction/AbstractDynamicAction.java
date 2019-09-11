@@ -45,12 +45,12 @@ public abstract class AbstractDynamicAction {
 
 		
 		Set<String> slotKeys = slots.keySet();
-		// search replace slots into search and response strings
+		// search replace slots into response string
 		for (String key : slotKeys) {
 
 			String value = slots.get(key).getValue();
 
-			response = response.replaceAll("\\$" + key + "\\$", value);
+			response = response.replaceAll("\\$slot_" + key + "\\$", value);
 
 		}
 		

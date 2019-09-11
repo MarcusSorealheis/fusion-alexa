@@ -13,12 +13,29 @@ public class Configuration {
 	private AlexaWebServiceSettings alexaWebServiceSettings;
 	private FusionServerAPISettings fusionServerAPISettings;
 	private Map<String, DynamicAction> dynamicActions;
+	private Map<String, JSONResponseHandler> jsonResponseHandlers;
 	private Map<String, IntentMapping> intentMappings;
 	private Map<String,Map<String, String>> resourceStrings;
 
 	public Configuration() {
 	}
+	
+	
 		
+
+	public Map<String, JSONResponseHandler> getJsonResponseHandlers() {
+		return jsonResponseHandlers;
+	}
+
+
+
+
+	public void setJsonResponseHandlers(Map<String, JSONResponseHandler> jsonResponseHandlers) {
+		this.jsonResponseHandlers = jsonResponseHandlers;
+	}
+
+
+
 
 	public Map<String, Map<String, String>> getResourceStrings() {
 		return resourceStrings;

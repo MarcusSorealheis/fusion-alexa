@@ -13,20 +13,22 @@ import com.damiendallimore.fusion.alexa.config.Configuration;
 import com.damiendallimore.fusion.alexa.config.DynamicAction;
 import com.damiendallimore.fusion.alexa.config.FusionServerAPISettings;
 import com.damiendallimore.fusion.alexa.config.IntentMapping;
+import com.damiendallimore.fusion.alexa.config.JSONResponseHandler;
 import com.damiendallimore.fusion.alexa.config.ResourceStringsUtil;
 import com.damiendallimore.fusion.alexa.dynamicaction.AbstractDynamicAction;
-
+import com.damiendallimore.fusion.alexa.responsehandler.AbstractJSONResponseHandler;
 
 import java.io.IOException;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLContext;
 
@@ -55,7 +57,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,11 +99,18 @@ public class FusionIntentHandler implements IntentRequestHandler {
 			
 			logger.info("Processing intent "+intentName);
 			
-			String response = im.getResponse();
+			String response = replacei18NTokens(im.getResponse(),input);
+			
+			String responseHandler = im.getJsonResponseHandler();
+			String responseHandlerArgs = im.getJsonResponseHandlerArgs();
+			
 			String dynamicAction = im.getDynamicAction();
 			String dynamicActionArgs = im.getDynamicActionArgs();
 			String solrQuery = im.getSolrQuery();
 			String filterQuery = im.getFilterQuery();
+			
+			String additionalURLArgs = im.getAdditionalURLArgs();
+			
 			Map<String, Slot> slots = intent.getSlots();
 			if(slots == null) {
 				slots = new HashMap<String, Slot>();
@@ -125,6 +133,7 @@ public class FusionIntentHandler implements IntentRequestHandler {
 					response = instance.executeAction();
 				} catch (Exception e) {
 					logger.error("Error executing dynamic action " + dynamicAction + " : " + e.getMessage());
+					response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.ERROR);
 				}
 			}
 			else if(solrQuery != null && solrQuery.length() > 0)  {
@@ -132,7 +141,7 @@ public class FusionIntentHandler implements IntentRequestHandler {
 				logger.info("This intent is a Fusion REST call");
 				
 				Set<String> slotKeys = slots.keySet();
-        		StringBuffer totalResponse = new StringBuffer();
+        		
         		// search replace slots into query params and response strings
         		for (String key : slotKeys) {
 
@@ -157,9 +166,10 @@ public class FusionIntentHandler implements IntentRequestHandler {
         			}
         			
         			
-        			response = response.replaceAll("\\$" + key + "\\$", value);
-        			solrQuery = solrQuery.replaceAll("\\$" + key + "\\$", value);
-        			filterQuery = filterQuery.replaceAll("\\$" + key + "\\$", value);
+        			response = response.replaceAll("\\$slot_" + key + "\\$", value);
+        			solrQuery = solrQuery.replaceAll("\\$slot_" + key + "\\$", value);
+        			filterQuery = filterQuery.replaceAll("\\$slot_" + key + "\\$", value);
+        			additionalURLArgs = additionalURLArgs.replaceAll("\\$slot_" + key + "\\$", value);
         		}
         		
 				FusionServerAPISettings fusionSettings = configuration.getFusionServerAPISettings();
@@ -203,22 +213,18 @@ public class FusionIntentHandler implements IntentRequestHandler {
 			                .build();
 						
 					
-					StringBuffer requestPath = new StringBuffer();
-					requestPath.append("/api/apollo/apps/")
-					           .append(im.getApp())
-					           .append("/query-pipelines/")
-					           .append(im.getPipelineId())
-					           .append("/collections/")
-					           .append(im.getCollection())
-					           .append("/")
-					           .append(im.getRequestHandler());
 					
+					String uriPath = im.getUriPath();
+					uriPath = uriPath.replaceAll("\\$app\\$", im.getApp());
+					uriPath = uriPath.replaceAll("\\$pipeline_id\\$", im.getPipelineId());
+					uriPath = uriPath.replaceAll("\\$collection\\$", im.getCollection());
+					uriPath = uriPath.replaceAll("\\$request_handler\\$", im.getRequestHandler());
 					
 					URIBuilder builder = new URIBuilder();
 					builder.setScheme(fusionSettings.getFusionScheme())
 					.setHost(fusionSettings.getFusionHost())
 					.setPort(fusionSettings.getFusionPort())
-					.setPath(requestPath.toString())
+					.setPath(uriPath)
 					    .setParameter("q", solrQuery)
 					    .setParameter("fq", filterQuery)
 					    .setParameter("fl", im.getFieldList())
@@ -227,19 +233,29 @@ public class FusionIntentHandler implements IntentRequestHandler {
 						.setParameter("df", im.getDefaultField())
 						.setParameter("wt", "json")
 						.setParameter("start", "0");
+					
+					
+					Map<String, String> additionalParams = getParamMap(additionalURLArgs);
+					
+					for (Map.Entry<String, String> entry : additionalParams.entrySet()) {
+					   
+					    builder.setParameter(entry.getKey(), entry.getValue());
+					}
+					
+					
 					URI uri = builder.build();
 					HttpGet httpGet = new HttpGet(uri);
 					
 					logger.info("Performing GET request to : "+uri.toString());
 					
-					List<HashMap<String, String>> docs = new ArrayList<HashMap<String, String>>();
+		
 					httpResponse = httpclient.execute(httpGet,context);
-				  
-					
+				  					
 				    int status = httpResponse.getStatusLine().getStatusCode();
 				    
 				    logger.info("Received HTTP response with code : "+status);
 				    
+				    JSONObject json = null;
                     if (status >= 200 && status < 300) {
                     	
                         HttpEntity entity = httpResponse.getEntity();
@@ -247,56 +263,37 @@ public class FusionIntentHandler implements IntentRequestHandler {
                         
                         logger.debug("Received response JSON : "+jsonStr);
                         
-                        JSONObject json = new JSONObject(jsonStr);
-                        		       
-                        docs = processJSON(json);	
-                        
-                        
+                        json = new JSONObject(jsonStr);                       		       
+                                                
                     } else {
                     	
                     	logger.error("Unexpected HTTP response status: " + status);
                     	
                     }
                     
-					
-                    boolean multirow = false;
-            		if (docs.size() > 1) {
-            			multirow = true;
-            			totalResponse.append("<speak>");
-            			response = response.replaceAll("<speak>", "");
-            			response = response.replaceAll("</speak>", "");
-            		}
-            		// oops , no search results
-            		if (docs.isEmpty()) {
-            			
-            			response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.NORESULTS);
-            			
-            			totalResponse.append(response);
-            		} else {
-
-            			for (HashMap<String, String> outputKeyVal : docs) {
-            				String copyResponse = response;
-            				for (String key : outputKeyVal.keySet()) {
-            					// interpolate fields from response row into response
-            					// textual output
-            					copyResponse = copyResponse.replaceAll("\\$resultfield_" + key + "\\$", outputKeyVal.get(key));
-
-            				}
-            				if (multirow)
-            					totalResponse.append("<s>");
-            				totalResponse.append(copyResponse).append("  ");
-            				if (multirow)
-            					totalResponse.append("</s>");
-            			}
-            		}
-            		if (multirow)
-            			totalResponse.append("</speak>");
-            		
-            		response = totalResponse.toString();
-            		
-					
+                    JSONResponseHandler jrh = configuration.getJsonResponseHandlers().get(responseHandler);
+    				if (jrh == null) {
+    					logger.warn("No JSON Response Handler mapping exists for " + responseHandler + " , using the default handler.");
+    					jrh = new JSONResponseHandler ();
+    					jrh.setClassName(AbstractJSONResponseHandler.DEFAULT);
+    
+    				}
+    				try {
+    					
+    					logger.info("Instantiating response handler "+responseHandler);
+    					AbstractJSONResponseHandler responseHandlerInstance = (AbstractJSONResponseHandler) (Class.forName(jrh.getClassName()).newInstance());
+    					responseHandlerInstance.setArgs(getParamMap(responseHandlerArgs));
+    					
+    					response = responseHandlerInstance.processResponse(response,json,configuration,input);
+    				} catch (Exception e) {
+    					logger.error("Error instantiating response handler " + responseHandler + " : " + e.getMessage());
+    					response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.ERROR);
+    				}
+    				
+    				
 				} catch (Exception e) {
 					logger.error("Error performing GET request to Fusion",e);
+					response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.ERROR);
 				}
                 finally {
 					try {
@@ -329,59 +326,25 @@ public class FusionIntentHandler implements IntentRequestHandler {
 		
 	}
 	
-	/**
-	 * Process response JSON from Fusion
-	 * 
-	 * @param jsonStr
-	 * @return
-	 */
-	private List<HashMap<String, String>> processJSON(JSONObject json) {
+	private String replacei18NTokens(String response,HandlerInput input) {
 		
-		logger.info("Processing response JSON from Fusion");
+        Pattern pattern = Pattern.compile("\\$resourcestring_(\\w+)\\$");
 		
-		
-		List<HashMap<String, String>> docs = new ArrayList<HashMap<String, String>>();
-			
-		JSONArray docsArray = json.getJSONObject("response").getJSONArray("docs");
-		
-		for (int i = 0; i < docsArray.length(); i++) {
-			
-			HashMap<String, String> doc = new HashMap<String, String>();
-			
-			JSONObject jsonDoc = docsArray.getJSONObject(i);
-			
-			for (String keyStr : jsonDoc.keySet()) {
-				Object keyvalue = jsonDoc.get(keyStr);
-				String keyvalueStr = "";
-				
-				//roll out multi value field
-		        if(keyvalue instanceof JSONArray) {
-		        	
-		        	List<Object> arrayItems = ((JSONArray)keyvalue).toList();
-		        	for(Object item : arrayItems) {
-		        		keyvalueStr += "<s>"+item.toString()+"</s>";
-		        	}
-		        	
-		        }
-		        //single value field
-		        else {
-		        	keyvalueStr = keyvalue.toString();
-		        }
-		        
-		        
-		        doc.put(keyStr, keyvalueStr);
-			}
+		//try to match the regex
+		Matcher m = pattern.matcher(response);
 
-			docs.add(doc);
-						
+		//loop through each match group and perform replacement
+		while (m.find()) {
+			
+			String matched = m.group(1);
+			String message = ResourceStringsUtil.getResource(configuration,input,matched);
+			response = response.replaceAll("\\$resourcestring_" + matched + "\\$", message);			
+			
 		}
-	
-		logger.info("Processed response JSON from Fusion, list contains "+docs.size()+" docs");
 		
-		return docs;
-		
-		
+		return response;
 	}
+	
 	/**
 	 * Helper method to roll out a key=value string to a Map
 	 * 

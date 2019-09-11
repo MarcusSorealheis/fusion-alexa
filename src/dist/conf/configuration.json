@@ -22,11 +22,13 @@
   },
   "global_fusion_search_settings":
   {
+      "global_uri_path" : "/api/apollo/apps/$app$/query-pipelines/$pipeline_id$/collections/$collection$/$request_handler$",
       "global_app" : "Movie_Search",
 	  "global_pipeline_id" : "Movie_Search",
 	  "global_collection":"Movie_Search",
 	  "global_request_handler":"select",
-	  "global_max_results_per_page": 10
+	  "global_max_results_per_page": 10,
+	  "global_json_response_handler": "default"
 	  
   },
   "dynamic_actions": [
@@ -38,6 +40,18 @@
     {
       "name": "foo_action",
       "class": "com.damiendallimore.fusion.alexa.dynamicaction.FooAction"
+      
+    }
+  ],
+  "json_response_handlers": [
+    {
+      "name": "default",
+      "class": "com.damiendallimore.fusion.alexa.responsehandler.DefaultResponseHandler"
+      
+    },
+    {
+      "name": "some_custom_handler",
+      "class": "com.damiendallimore.fusion.alexa.responsehandler.SomeCustomResponseHandler"
       
     }
   ],
@@ -83,6 +97,11 @@
       "key": "noresults",
       "value": "I'm sorry , I couldn't find any results"
       
+    },
+    {
+      "key": "whatisfusion",
+      "value": "Fusion is a cognitive search engine that scales to billions of documents while serving millions of users."
+      
     }
         
     ]
@@ -92,7 +111,7 @@
   	{
       "intent": "FUSION_FindMoviesInGenreIntent",
       "solr_query": "*:*",
-      "filter_query": "genres_ss:(\"$movie_genre$\")",
+      "filter_query": "genres_ss:(\"$slot_movie_genre$\")",
       "field_list": "title_txt",
       "app" : "Movie_Search",
       "pipeline_id" : "Movie_Search",
@@ -106,8 +125,8 @@
     },
     {
       "intent": "FUSION_FindMoviesInGenreInYearIntent",
-      "solr_query": "year_i:(\"$movie_year$\")",
-      "filter_query": "genres_ss:(\"$movie_genre$\")",
+      "solr_query": "year_i:(\"$slot_movie_year$\")",
+      "filter_query": "genres_ss:(\"$slot_movie_genre$\")",
       "field_list": "title_txt",
       "sort_field_direction": "id asc",
       "default_field": "",
@@ -123,6 +142,10 @@
     {
       "intent": "FUSION_WhatIsFusionIntent",
       "response": "Fusion is a cognitive search engine that scales to billions of documents while serving millions of users."      
+    },
+    {
+      "intent": "FUSION_WhatIsFusionIntentI18N",
+      "response": "$resourcestring_whatisfusion$"      
     }
   ]
 }

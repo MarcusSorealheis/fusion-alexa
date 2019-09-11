@@ -135,11 +135,14 @@ These are global settings for `intent_mappings`.
 
 If you need, they can be overidden in each `intent_mapping` that you declare.
 
-*  **global_pipeline_app** : the Fusion App Context
+*  **global_uri_path** : the URI Path for the REST call , can have tokens in the path for dynamic replacement.See the example in `configuration.json`
+*  **global_app** : the Fusion App Context
 *  **global_pipeline_id** : the Fusion Pipeline ID
 *  **global_collection** : the Fusion Collection
 *  **global_request_handler** : the Fusion search request handler
 *  **global_max_results_per_page** : Maximum results to return in each request.
+*  **global_json_response_handler** : Name of a handler defined in `json_response_handlers`. 
+*  **global_json_response_handler_args** :  a key=value,key2=value2 ..... list of arguments that can be passed into the handler and accessed by your code 
 
 #### dynamic\_actions
 
@@ -165,6 +168,7 @@ The fields below that you include will determine how the intent request is handl
 *  **solr_query** : [query parameters](https://doc.lucidworks.com/fusion-server/4.2/search-development/getting-data-out/query-language-cheat-sheet.html#common-query-parameters) 
 *  **filter_query** : [filter query](https://doc.lucidworks.com/fusion-server/4.2/search-development/getting-data-out/query-language-cheat-sheet.html#common-query-parameters)
 *  **field_list** : [field list](https://doc.lucidworks.com/fusion-server/4.2/search-development/getting-data-out/query-language-cheat-sheet.html#common-query-parameters)
+*  **uri_path** : the URI Path for the REST call , can have tokens in the path for dynamic replacement.See the example in `configuration.json`
 *  **app** : the Fusion App Context 
 *  **pipeline_id** : the Fusion Pipeline ID 
 *  **collection** : the Fusion Collection 
@@ -175,10 +179,28 @@ The fields below that you include will determine how the intent request is handl
 *  **response** : the response to return back to Alexa. See more below on response formatting 
 *  **dynamic_action** : the action name specified in `dynamic_actions` 
 *  **dynamic_action_args** : a key=value,key2=value2 ..... list of arguments that can be passed into the action and accessed by your code 
+*  **json_response_handler** : Name of a handler defined in `json_response_handlers`. 
+*  **json_response_handler_args** :  a key=value,key2=value2 ..... list of arguments that can be passed into the handler and accessed by your code
+*  **additional_url_args** : a key=value,key2=value2 ..... list of any other url arguments that you want to add to the REST search request
 
 `solr_query` and `filter_query` may also include slot values from the request. See the example in `configuration.json`
 
+### Custom JSON Response Handlers
 
+You can implement you own custom JSON Response handler.
+
+These are the steps for creating a new handler :
+
+1. Create a class that extends the AbstractJSONResponseHandler base class.
+2. Implement the `processResponse()` method .You can access custom arguments from within your code also.
+3. Update build.gradle with any dependencies.
+4. Update the `configuration.json` file to map the class name to some handler name that you can refer to
+5. Apply this handler either globally using the `global_json_response_handler` field or for a specific `intent_mapping` using the `json_response_handler` field
+6. Rebuild everything , `./gradlew distZip`
+
+Refer to the examples in `configuration.json`.
+
+The default handler `com.damiendallimore.fusion.alexa.responsehandler.DefaultResponseHandler` will always be fallen back to if no handlers can be found.
 
 ### Create your own dynamic actions
 
@@ -189,8 +211,7 @@ This App ships with 2 example dynamic actions , `com.damiendallimore.fusion.alex
 These are the steps for creating a new Dynamic Action :
 
 1. Create a class that extends the AbstractDynamicAction base class.
-2. Implement the `executeAction()` method .You can access slot values and custom arguments 
-from within your code also.
+2. Implement the `executeAction()` method .You can access slot values and custom arguments from within your code also.
 3. Update build.gradle with any dependencies.
 4. Update the `configuration.json` file to map the class name to some action name that you can refer to
 5. Add a mapping from an incoming intent request to this dynamic action in `configuration.json`
@@ -203,7 +224,9 @@ Refer to the examples in `configuration.json`.
 
 The JSON `response` field in `configuration.json` can be in plain text or [SSML](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/speech-synthesis-markup-language-ssml-reference).
 
-The response text or SSML can contain tokens to replace from the values of any slots that were passed in the request intent by wrapping the slot key in $ signs ie: `$movie_genre$` or `$movie_year$`  (except for static responses)
+The response text or SSML can contain tokens to replace from the values of any slots that were passed in the request  ie: `$slot_movie_genre$` or `$slot_movie_year$` 
+
+The response text or SSML can contain tokens to replace from the values of any i18N resource strings ie: `$resourcestring_whatisfusion$`
 
 For Solr Querys the response text or SSML can contain tokens to replace from the results of the searches. These are declared in the format `$resultfield_xxx$` , where `xxx` is the name of the field in the search result.
 
@@ -212,8 +235,9 @@ Dynamic action responses also have a special token `$dynamic_response` which is 
 Response Examples :
 
 *  Static response : `Hello this is a lovely day`
-*  Response with slot values : `Hello , I see you asked about movies in $movie_year$`
-*  Response with slot values and search result fields : `The movie $resultfield_title_txt$ was released in $movie_year$`  (where `title_txt` would be the name of the search result field)
+*  Response with an i18n string : `$resourcestring_hello$ this is a lovely day`
+*  Response with slot values : `Hello , I see you asked about movies in $slot_movie_year$`
+*  Response with slot values and search result fields : `The movie $resultfield_title_txt$ was released in $slot_movie_year$`  (where `title_txt` would be the name of the search result field)
 *  SSML response : `<speak> Hello there </speak>`
 *  Dynamic action response : `My dynamic response is $dynamic_response$`
 
