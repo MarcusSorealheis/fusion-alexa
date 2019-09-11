@@ -32,6 +32,18 @@
                     ]
                 },
                 {
+                    "name": "FUSION_FindMoviesInYearIntent",
+                    "slots": [
+                        {
+                            "name": "movie_year",
+                            "type": "AMAZON.DATE"
+                        }
+                    ],
+                    "samples": [
+                        "find movies in the year {movie_year}"
+                    ]
+                },
+                {
                     "name": "FUSION_WhatIsFusionIntent",
                     "slots": [],
                     "samples": [
@@ -39,6 +51,15 @@
                         "what's Fusion",
                         "please tell me about Fusion",
                         "tell me about Fusion"
+                    ]
+                },
+                {
+                    "name": "FUSION_WhoIsTheCEO",
+                    "slots": [],
+                    "samples": [
+                        "who is the CEO of Lucidworks",
+                        "who's the CEO'",
+                        "who da boss"
                     ]
                 },
                 {

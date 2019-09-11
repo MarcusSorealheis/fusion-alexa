@@ -99,6 +99,11 @@
       
     },
     {
+      "key": "movie year",
+      "value": "The movie"
+      
+    },
+    {
       "key": "whatisfusion",
       "value": "Fusion is a cognitive search engine that scales to billions of documents while serving millions of users."
       
@@ -130,7 +135,19 @@
       "field_list": "title_txt",
       "sort_field_direction": "id asc",
       "default_field": "",
+      "additional_url_args":"start=0,wt=json",
       "response": "$resultfield_title_txt$"
+      
+    },
+    {
+      "intent": "FUSION_FindMoviesInYearIntent",
+      "solr_query": "year_i:(\"$slot_movie_year$\")",
+      "field_list": "title_txt",
+      "sort_field_direction": "id asc",
+      "additional_url_args":"start=0,wt=json",
+      "max_results_per_page": 2,
+      "json_response_handler": "default",
+      "response": "$resourcestring_movieyear$ $resultfield_title_txt$ was released in $slot_movie_year$"
       
     },
     {
@@ -141,11 +158,11 @@
     }, 
     {
       "intent": "FUSION_WhatIsFusionIntent",
-      "response": "Fusion is a cognitive search engine that scales to billions of documents while serving millions of users."      
+      "response": "$resourcestring_whatisfusion$"      
     },
     {
-      "intent": "FUSION_WhatIsFusionIntentI18N",
-      "response": "$resourcestring_whatisfusion$"      
+      "intent": "FUSION_WhoIsTheCEO",
+      "response": "Will Hayes"      
     }
   ]
 }
