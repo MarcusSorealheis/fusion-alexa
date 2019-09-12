@@ -148,12 +148,14 @@ If you need, they can be overidden in each `intent_mapping` that you declare.
 #### dynamic\_actions
 
 *  **name** : A name to refer to this action when wiring up in `intent_mappings`
-*  **class** : Fully qualified classname  
+*  **class** : Fully qualified classname 
+*  **javascript** : A script (minified to 1 line) that will return a response String
 
 #### json\_response\_handlers
 
 *  **name** : A name to refer to this handler when wiring up in `intent_mappings`
 *  **class** : Fully qualified classname  
+*  **javascript** : A script (minified to 1 line) that will return a response String
 
 #### resource\_strings
 
@@ -197,7 +199,7 @@ If neither of the above fields is present , then it is assumed that the **respon
 
 You can implement you own custom JSON Response handler.
 
-These are the steps for creating a new handler :
+These are the steps for creating a new Java Class handler :
 
 1. Create a class that extends the AbstractJSONResponseHandler base class.
 2. Implement the `processResponse()` method .You can access custom arguments from within your code also.
@@ -210,13 +212,25 @@ Refer to the examples in `configuration.json`.
 
 The default handler `com.damiendallimore.fusion.alexa.responsehandler.DefaultResponseHandler` will always be fallen back to if no handlers can be found.
 
+Instead of a Java class you can also provide a Javascript script using the `javascript` field.
+
+The following objects will be passed to the script's execution context :
+
+1. response template :  String , binding name `response`
+2. response JSON : org.json.JSONObject Object , binding name `json`
+3. custom handler arguments : java.util.Map<String, String> Object ,  , binding name `args`
+3. configuration object : com.damiendallimore.fusion.alexa.config.Configuration Object , binding name `configuration`
+3. intent input object : com.amazon.ask.dispatcher.request.handler.HandlerInput Object , binding name `input`
+
+The script should return a response String for Alexa.
+
 ### Create your own dynamic actions
 
 You can easily extend the available set of built in actions by creating your own custom dynamic actions and plugging them in , all you need is some simple Java coding skills.
 
 This App ships with 2 example dynamic actions , `com.damiendallimore.fusion.alexa.dynamicaction.FooAction` and `com.damiendallimore.fusion.alexa.dynamicaction.GooAction`. They are just trivial skeleton examples.
 
-These are the steps for creating a new Dynamic Action :
+These are the steps for creating a new Java Class Dynamic Action :
 
 1. Create a class that extends the AbstractDynamicAction base class.
 2. Implement the `executeAction()` method .You can access slot values and custom arguments from within your code also.
@@ -226,6 +240,16 @@ These are the steps for creating a new Dynamic Action :
 6. Rebuild everything , `./gradlew distZip`
 
 Refer to the examples in `configuration.json`.
+
+Instead of a Java class you can also provide a Javascript script using the `javascript` field.
+
+The following objects will be passed to the script's execution context :
+
+1. response template :  String , binding name `response`
+2. Alexa slots : java.util.Map<String, com.amazon.ask.model.Slot> Object , binding name `slots`
+3. custom action arguments : java.util.Map<String, String> Object , binding name `args`
+
+The script should return a response String for Alexa.
  
 
 ### Response formatting

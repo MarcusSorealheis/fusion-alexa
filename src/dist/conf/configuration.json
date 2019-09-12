@@ -44,7 +44,7 @@
     },
     {
       "name": "my_js_action",
-      "javascript": "var goo='hello';response"           
+      "javascript": "var someText='hello';response"           
     }
   ],
   "json_response_handlers": [
@@ -60,7 +60,7 @@
     },
     {
       "name": "my_js_handler",
-      "javascript": "var goo='hello';response"
+      "javascript": "var someText='hello';response"
       
     }
   ],
