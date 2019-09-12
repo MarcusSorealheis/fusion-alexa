@@ -2,6 +2,9 @@ package com.damiendallimore.fusion.alexa.config;
 
 import java.util.Map;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 /**
  * Object to hold the parsed JSON configuration file (configuration.json)
  * 
@@ -19,8 +22,14 @@ public class Configuration {
 
 	private static Configuration instance;
 	
-	private Configuration() {}
+	private ScriptEngine scriptEngine;
 	
+	private Configuration() {
+		
+		scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
+	}
+	
+
 	public synchronized static Configuration getInstance() {
 		
 		if (instance == null) {
@@ -30,6 +39,11 @@ public class Configuration {
 	    return instance;
 	
 	}
+
+	public ScriptEngine getScriptEngine() {
+		return scriptEngine;
+	}
+
 
 	public Map<String, JSONResponseHandler> getJsonResponseHandlers() {
 		return jsonResponseHandlers;

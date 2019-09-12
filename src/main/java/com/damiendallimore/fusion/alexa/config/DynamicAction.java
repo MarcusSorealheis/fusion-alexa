@@ -6,7 +6,17 @@ public class DynamicAction {
 	// fully qualified classname
 	private String className = "";
 
+	private String javascript = "";
+	
 	public DynamicAction() {
+	}
+	
+	public String getJavascript() {
+		return javascript;
+	}
+
+	public void setJavascript(String javascript) {
+		this.javascript = javascript;
 	}
 
 	public String getName() {

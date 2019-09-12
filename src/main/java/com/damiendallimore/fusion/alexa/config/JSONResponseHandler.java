@@ -5,8 +5,19 @@ public class JSONResponseHandler {
 	private String name = "";
 	// fully qualified classname
 	private String className = "";
+	
+	private String javascript = "";
 
 	public JSONResponseHandler() {
+	}
+		
+
+	public String getJavascript() {
+		return javascript;
+	}
+
+	public void setJavascript(String javascript) {
+		this.javascript = javascript;
 	}
 
 	public String getName() {

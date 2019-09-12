@@ -31,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLContext;
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -122,18 +124,47 @@ public class FusionIntentHandler implements IntentRequestHandler {
 				DynamicAction dam = configuration.getDynamicActions().get(dynamicAction);
 				if (dam == null) {
 					logger.error("No dynamic action mapping exists for " + dynamicAction);
-				}
-				try {
-					
-					logger.info("Executing dynamic action");
-					AbstractDynamicAction instance = (AbstractDynamicAction) (Class.forName(dam.getClassName()).newInstance());
-					instance.setArgs(getParamMap(dynamicActionArgs));
-					instance.setSlots(slots);
-					instance.setResponseTemplate(response);
-					response = instance.executeAction();
-				} catch (Exception e) {
-					logger.error("Error executing dynamic action " + dynamicAction + " : " + e.getMessage());
 					response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.ERROR);
+				}
+				else {
+					try {
+						
+						logger.info("Executing dynamic action");
+						
+						if(!dam.getClassName().isEmpty()) {
+							
+							logger.info("Dynamic Action is a Java Class");
+							
+							AbstractDynamicAction instance = (AbstractDynamicAction) (Class.forName(dam.getClassName()).newInstance());
+							instance.setArgs(getParamMap(dynamicActionArgs));
+							instance.setSlots(slots);
+							instance.setResponseTemplate(response);
+							response = instance.executeAction();
+						
+						}
+						else if(!dam.getJavascript().isEmpty()) {
+							
+							logger.info("Dynamic Action is Javascript");
+							
+						    ScriptEngine engine = this.configuration.getScriptEngine();
+    					    Bindings bindings = engine.createBindings();
+    					    bindings.put("response", response);
+    					    bindings.put("slots", slots);
+    					    bindings.put("args", getParamMap(dynamicActionArgs));
+    					  
+    					    response  = (String) engine.eval(dam.getJavascript(), bindings);
+	    					  
+						}
+						else {
+							
+						    logger.error("No Dynamic Action implementation was provided");
+	    				    response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.ERROR);
+	    						
+						}
+					} catch (Exception e) {
+						logger.error("Error executing dynamic action " + dynamicAction + " : " + e.getMessage());
+						response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.ERROR);
+					}
 				}
 			}
 			else if(solrQuery != null && solrQuery.length() > 0)  {
@@ -281,12 +312,38 @@ public class FusionIntentHandler implements IntentRequestHandler {
     				try {
     					
     					logger.info("Instantiating response handler "+responseHandler);
-    					AbstractJSONResponseHandler responseHandlerInstance = (AbstractJSONResponseHandler) (Class.forName(jrh.getClassName()).newInstance());
-    					responseHandlerInstance.setArgs(getParamMap(responseHandlerArgs));
     					
-    					response = responseHandlerInstance.processResponse(response,json,configuration,input);
+    					if(!jrh.getClassName().isEmpty()) {
+    						
+    					  logger.info("Response Handler is a Java Class");
+    					  AbstractJSONResponseHandler responseHandlerInstance = (AbstractJSONResponseHandler) (Class.forName(jrh.getClassName()).newInstance());
+    					  responseHandlerInstance.setArgs(getParamMap(responseHandlerArgs));
+    					
+    					  response = responseHandlerInstance.processResponse(response,json,configuration,input);
+    					}
+    					else if(!jrh.getJavascript().isEmpty()) {
+    						
+    					  logger.info("Response Handler is Javascript");
+    					  
+    					  ScriptEngine engine = this.configuration.getScriptEngine();
+    					  Bindings bindings = engine.createBindings();
+    					  bindings.put("response", response);
+    					  bindings.put("json", json);
+    					  bindings.put("configuration", configuration);
+    					  bindings.put("input", input);
+    					  bindings.put("args", getParamMap(responseHandlerArgs));
+    					  
+    					  response  = (String) engine.eval(jrh.getJavascript(), bindings);
+    						
+    					}
+    					else {
+    						
+    					  logger.error("No Response Handler implementation was provided");
+    					  response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.ERROR);
+    						
+    					}
     				} catch (Exception e) {
-    					logger.error("Error instantiating response handler " + responseHandler + " : " + e.getMessage());
+    					logger.error("Error executing response handler " + responseHandler + " : " + e.getMessage());
     					response = ResourceStringsUtil.getResource(configuration,input,ResourceStringsUtil.ERROR);
     				}
     				

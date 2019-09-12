@@ -298,9 +298,16 @@ public class FusionAlexaServer {
 			} catch (Exception e) {
 			}
 			try {
-				da.setClassName(item.getString("class"));
+				if(item.has("class"))
+				  da.setClassName(item.getString("class"));
 			} catch (Exception e) {
 			}
+			try {
+				if(item.has("javascript"))
+				  da.setJavascript(item.getString("javascript"));
+			} catch (Exception e) {
+			}
+			
 
 			dynamicActionMappings.put(da.getName(), da);
 		}
@@ -320,7 +327,13 @@ public class FusionAlexaServer {
 			} catch (Exception e) {
 			}
 			try {
-				rh.setClassName(item.getString("class"));
+				if(item.has("class"))
+				  rh.setClassName(item.getString("class"));
+			} catch (Exception e) {
+			}
+			try {
+				if(item.has("javascript"))
+				  rh.setJavascript(item.getString("javascript"));
 			} catch (Exception e) {
 			}
 

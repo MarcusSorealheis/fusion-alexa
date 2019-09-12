@@ -41,6 +41,10 @@
       "name": "foo_action",
       "class": "com.damiendallimore.fusion.alexa.dynamicaction.FooAction"
       
+    },
+    {
+      "name": "my_js_action",
+      "javascript": "var goo='hello';response"           
     }
   ],
   "json_response_handlers": [
@@ -52,6 +56,11 @@
     {
       "name": "some_custom_handler",
       "class": "com.damiendallimore.fusion.alexa.responsehandler.SomeCustomResponseHandler"
+      
+    },
+    {
+      "name": "my_js_handler",
+      "javascript": "var goo='hello';response"
       
     }
   ],
