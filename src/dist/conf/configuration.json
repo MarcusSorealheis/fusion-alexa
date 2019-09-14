@@ -44,7 +44,7 @@
     },
     {
       "name": "my_js_action",
-      "javascript": "var someText='hello';response"           
+      "javascript": "function replaceResponse(response,dynamicResponse){ response=response.replace(\"$dynamic_response$\",dynamicResponse);var slotKeys=slots.keySet();slotKeys.forEach(function(key){var value=slots.get(key).getValue();response=response.replace(\"$slot_\"+key+\"$\",value)});return response}var someText=\"this is a javascript dynamic action handler\";replaceResponse(response,someText);"           
     }
   ],
   "json_response_handlers": [
