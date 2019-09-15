@@ -60,7 +60,7 @@
     },
     {
       "name": "my_js_handler",
-      "javascript": "var someText='hello';response"
+      "javascript": "var docsArray = json.getJSONObject(\"response\").getJSONArray(\"docs\");var totalDocs = docsArray.length();response = response.replace(\"$resultfield_docs$\",totalDocs);response;"
       
     }
   ],
